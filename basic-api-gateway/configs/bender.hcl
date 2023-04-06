@@ -1,8 +1,8 @@
 service {
-    name    = "bender"
-    id      = "bender"
-    address = "10.5.0.100"
-    port    = 8080
+    name     = "bender"
+    id       = "bender"
+    address  = "10.5.0.100"
+    port     = 8080
 
     connect {
         sidecar_service {

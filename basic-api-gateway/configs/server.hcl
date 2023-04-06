@@ -4,14 +4,19 @@ server = true
 
 log_level = "INFO"
 
-ui_config = {
+ui_config {
   enabled = true
 
 }
 
-addresses = {
+addresses {
   http = "0.0.0.0"
   grpc = "0.0.0.0"
+}
+
+ports {
+    http = 8500
+    grpc = 8502
 }
 
 bind_addr = "0.0.0.0"
