@@ -1,0 +1,20 @@
+node_name = "zoidberg"
+datacenter = "dc1"
+server = true
+
+log_level = "INFO"
+
+ui_config = {
+  enabled = true
+
+}
+
+addresses = {
+  http = "0.0.0.0"
+  grpc = "0.0.0.0"
+}
+
+bind_addr = "0.0.0.0"
+advertise_addr =" 10.5.0.2"
+
+auto_reload_config = true

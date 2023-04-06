@@ -1,0 +1,11 @@
+#! /usr/bin/bash
+
+cp ~/go/bin/consul ./consul
+cp /usr/local/bin/envoy ./envoy
+
+DOCKERTAG="consul-envoy:local"
+
+docker build -t "$DOCKERTAG" .
+
+rm consul
+rm envoy

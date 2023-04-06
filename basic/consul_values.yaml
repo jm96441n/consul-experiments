@@ -1,0 +1,22 @@
+global:
+  # set up default values
+  name: consul
+  datacenter: dc1
+  tls:
+    enabled: true
+# enable service mesh
+connectInject:
+  enabled: true
+
+# handles config entry custom resources
+controller:
+  enabled: true
+
+server:
+  replicas: 1
+
+ui:
+  enabled: true
+  service:
+    enabled: true
+    type: ClusterIP

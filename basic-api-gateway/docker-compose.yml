@@ -1,0 +1,65 @@
+services:
+  consul-server1:
+    image: consul-dev:latest
+    container_name: consul-server1
+    restart: always
+    volumes:
+      - ./configs/server.hcl:/consul/config/server.hcl
+    networks:
+      dc1:
+        ipv4_address: 10.5.0.2
+    ports:
+      - "8500:8500"
+      - "8600:53"
+    environment:
+      CONSUL_LICENSE: ${CONSUL_LICENSE}
+    command: "agent -bootstrap"
+    privileged: true
+
+  apigw:
+    image: consul-envoy:local
+    container_name: apigw
+    volumes:
+      - ./configs/apigw.hcl:/config/apigw.hcl
+    networks:
+      dc1:
+        ipv4_address: 10.5.0.12
+    ports:
+      - "9001:9001"
+      - "19001:19000"
+    environment:
+      CONSUL_LICENSE: ${CONSUL_LICENSE}
+      CONSUL_HTTP_ADDR: 10.5.0.2:8500
+      CONSUL_GRPC_ADDR: 10.5.0.2:8502
+    command: "/bin/bash -c 'consul config write /config/apigw.hcl && consul connect envoy -gateway api -register -service api-gateway -proxy-id api-gateway -admin-bind=0.0.0.0:19000'"
+
+  service-bender-default:
+    image: docker.mirror.hashicorp.services/fortio/fortio
+    container_name: "service-bender-default"
+    command: "server -redirect-port -disabled -echo-server-default-params status=200"
+    ports:
+      - "8080:8080"
+      - "19002:19000"
+    networks:
+     dc1:
+        ipv4_address: 10.5.0.100
+
+  service-bender-default-envoy:
+    image: consul-envoy:local
+    container_name: service-bender-default-envoy
+    volumes:
+      - ./configs/bender.hcl:/consul/config/bender.hcl
+    environment:
+      CONSUL_LICENSE: ${CONSUL_LICENSE}
+      CONSUL_HTTP_ADDR: 10.5.0.2:8500
+      CONSUL_GRPC_ADDR: 10.5.0.2:8502
+      SERVICE_CONFIG: /consul/config/bender.hcl
+    command: "consul connect envoy -sidecar-for bender -admin-bind=0.0.0.0:19000"
+    network_mode: "service:service-bender-default"
+
+networks:
+  dc1:
+    driver: bridge
+    ipam:
+     config:
+       - subnet: 10.5.0.0/16
