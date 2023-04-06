@@ -24,18 +24,6 @@ Config {
 EOF
 
 cat <<EOF | consul config write -
-kind = "api-gateway"
-name = "api-gateway"
-listeners = [
-  {
-    name = "listener-one"
-    port     = 9001
-    protocol = "http"
-  }
-]
-EOF
-
-cat <<EOF | consul config write -
 kind = "http-route"
 name = "api-gateway-route"
 rules = [

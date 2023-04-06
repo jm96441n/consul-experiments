@@ -41,7 +41,7 @@ services:
       - "8080:8080"
       - "19002:19000"
     networks:
-     dc1:
+      dc1:
         ipv4_address: 10.5.0.100
 
   service-bender-default-envoy:

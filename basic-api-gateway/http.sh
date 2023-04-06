@@ -2,16 +2,14 @@
 
 set -e
 
-echo "creating partition"
-./consul partition create -name part-1
-
 cleanup() {
+    docker stop service || true
     echo "shutting down upstreams"
 }
 
 trap 'trap " " SIGTERM; kill 0; wait; cleanup' SIGINT SIGTERM
 
-cat <<EOF | ./consul config write -
+cat <<EOF | consul config write -
 Kind      = "proxy-defaults"
 Name      = "global"
 Config {
@@ -20,13 +18,13 @@ Config {
 EOF
 
 echo "Writing gateway config entry"
-cat <<EOF | ./consul config write -
+cat <<EOF | consul config write -
 kind = "api-gateway"
 name = "api-gateway"
 listeners = [
   {
     name = "listener-one"
-    port     = 9001
+    port     = 9999
     protocol = "http"
   }
 ]
@@ -38,10 +36,24 @@ kind = "http-route"
 name = "api-gateway-route"
 rules = [
   {
+    filters {
+        URLRewrite {
+            path = "/fortio"
+        }
+    }
     services = [
       {
-        name = "bender"
+        name = "service"
       }
+    ]
+
+    matches = [
+        {
+            path {
+                value = "/default"
+                match = "prefix"
+            }
+        }
     ]
   }
 ]
@@ -59,19 +71,17 @@ echo "Registering http service"
 cat <<EOF >/tmp/service.hcl
 service {
   name = "service"
-  partition = "part-1"
   id   = "service"
   port = 9002
 }
 EOF
-./consul services register -partition part-1 /tmp/service.hcl
+consul services register /tmp/service.hcl
 
 echo "Registering http service proxy"
 cat <<EOF >/tmp/proxy.hcl
 service {
   kind = "connect-proxy"
   name = "service"
-  partition = "part-1"
   id   = "service"
   port = 9001
 
@@ -83,20 +93,12 @@ service {
   }
 }
 EOF
-./consul services register /tmp/proxy.hcl
+consul services register /tmp/proxy.hcl
 
-cat <<EOF >/tmp/server1.html
-HTTP/1.1 200 GET
-Content-Type: text/html; charset=UTF-8
-
-<!doctype html><html><body>server1</body></html>
-EOF
-
-echo "Running http service"
-ncat -e "/bin/cat /tmp/server1.html" -k -l 9002 &
+docker run -d --rm --name service -p 9002:8080 docker.mirror.hashicorp.services/fortio/fortio server -redirect-port -disabled -echo-server-default-params status=200
 echo "Running http service sidecar proxy"
-./consul connect envoy -sidecar-for service -admin-bind 127.0.0.1:9092 -- -l trace &
+consul connect envoy -sidecar-for service -admin-bind 127.0.0.1:9092 -- -l trace &
 echo "Running api gateway"
-./consul connect envoy -gateway api -register -service api-gateway -proxy-id api-gateway -- -l trace &
+consul connect envoy -gateway api -register -service api-gateway -proxy-id api-gateway -- -l trace &
 
 wait
