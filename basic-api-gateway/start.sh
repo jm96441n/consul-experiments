@@ -28,10 +28,24 @@ kind = "http-route"
 name = "api-gateway-route"
 rules = [
   {
+    filters {
+        URLRewrite {
+            path = "/fortio"
+        }
+    }
+
     services = [
       {
         name = "bender"
       }
+    ]
+    matches = [
+        {
+            path {
+                value = "/default"
+                match = "prefix"
+            }
+        }
     ]
   }
 ]
@@ -42,6 +56,7 @@ parents = [
     name = "api-gateway"
     kind = "api-gateway"
   }
+
 ]
 EOF
 
