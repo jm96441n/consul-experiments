@@ -10,6 +10,13 @@
 
 
 ## Tasks
+### start
+Runs the `start.sh` file
+```sh
+./start.sh
+```
+
+
 ### route
 Prints http route config status
 ```sh
