@@ -2,6 +2,12 @@
 
 Repo to hold some experiments with consul/useful consul setups for local testing.
 
+## Dependencies
+* `consul` binary in your gopath ($HOME/go/bin)
+* `envoy` binary at `/usr/local/envoy`
+* `xc` to run tasks (optional) [docs](https://github.com/joerdav/xc)
+* `docker` to run `docker compose` and relevant containers
+
 ## Repo Layout
 
 At the root of this repo:

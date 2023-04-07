@@ -15,50 +15,9 @@ docker compose up -d
 
 sleep 5
 
-cat <<EOF | consul config write -
-Kind      = "proxy-defaults"
-Name      = "global"
-Config {
-  protocol = "http"
-}
-EOF
+consul config write ./configs/proxy_defaults.hcl
 
-cat <<EOF | consul config write -
-kind = "http-route"
-name = "api-gateway-route"
-rules = [
-  {
-    filters {
-        URLRewrite {
-            path = "/fortio"
-        }
-    }
-
-    services = [
-      {
-        name = "bender"
-      }
-    ]
-    matches = [
-        {
-            path {
-                value = "/default"
-                match = "prefix"
-            }
-        }
-    ]
-  }
-]
-
-parents = [
-  {
-    sectionName = "listener-one"
-    name = "api-gateway"
-    kind = "api-gateway"
-  }
-
-]
-EOF
+consul config write ./configs/http_route_api_gateway.hcl
 
 docker compose logs -f
 
