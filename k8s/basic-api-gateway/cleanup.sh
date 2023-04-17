@@ -1,3 +1,3 @@
 #!/bin/bash
 
-kind delete cluster -n consulab
+kind delete cluster -n conlab

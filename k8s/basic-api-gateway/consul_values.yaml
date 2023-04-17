@@ -2,7 +2,7 @@ global:
   datacenter: dc1
   name: consul
   logLevel: debug
-  enabled: true
+  enabled: false
   imageK8S: consul-k8s-control-plane-dev:blueberry
 
 connectInject:
@@ -14,3 +14,16 @@ connectInject:
   k8sAllowNamespaces: ["*"]
   consulNamespaces:
     mirroringK8S: true
+
+server:
+  enabled: true
+  replicas: 1
+
+client:
+  enabled: true
+  grpc: true
+
+ui:
+  enabled: true
+  service:
+    type: NodePort
