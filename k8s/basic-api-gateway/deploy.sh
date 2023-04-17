@@ -10,7 +10,7 @@ echo "loaded consul-k8s image"
 
 echo "helm installing"
 helm install consul ~/hashi/consul-k8s/charts/consul -n consul --create-namespace --values ./consul_values.yaml
-while ! kubectl get deployments consul-consul-connect-injecotr -n consul; do sleep 1; done
+while ! kubectl get deployments consul-connect-injector -n consul; do sleep 1; done
 kubectl wait --timeout=180s --for=condition=Available=True deployments/consul-consul-connect-injector -n consul
 echo "helm install finished"
 

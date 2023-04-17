@@ -7,13 +7,7 @@ global:
 
 connectInject:
   enabled: true
-  replicas: 1
-  transparentProxy:
-    defaultEnabled: true
-    defaultOverwriteProbes: true
-  k8sAllowNamespaces: ["*"]
-  consulNamespaces:
-    mirroringK8S: true
+  default: true
 
 server:
   enabled: true
