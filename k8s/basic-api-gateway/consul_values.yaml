@@ -1,0 +1,16 @@
+global:
+  datacenter: dc1
+  name: consul
+  logLevel: debug
+  enabled: true
+  imageK8S: consul-k8s-control-plane-dev:blueberry
+
+connectInject:
+  enabled: true
+  replicas: 1
+  transparentProxy:
+    defaultEnabled: true
+    defaultOverwriteProbes: true
+  k8sAllowNamespaces: ["*"]
+  consulNamespaces:
+    mirroringK8S: true
