@@ -4,10 +4,10 @@ services:
     container_name: consul-server1
     restart: always
     volumes:
-      - ./agent-configs/server.hcl:/consul/config/server.hcl
+      - ./configs/server.hcl:/consul/config/server.hcl
     networks:
       dc1:
-        ipv4_address: 10.5.0.2
+        ipv4_address: 10.6.0.2
     ports:
       - "8500:8500"
       - "8600:53"
@@ -16,52 +16,50 @@ services:
     command: "agent -bootstrap-expect=1"
     privileged: true
 
-  consul-client-default-partition1:
-    image: consul-dev:latest
-    container_name: consul-client-default-partition-1
-    restart: always
-    volumes:
-      - ./agent-configs/client-default.hcl:/consul/config/client-default.hcl
-    networks:
-      dc1:
-        ipv4_address: 10.5.0.10
-    environment:
-      CONSUL_LICENSE: ${CONSUL_LICENSE}
-    command: "agent"
+#  consul-client-default-partition1:
+#   image: consul-dev:latest
+#   container_name: consul-client-default-partition-1
+#   restart: always
+#   volumes:
+#     - ./configs/client-default.hcl:/consul/config/client-default.hcl
+#   networks:
+#     dc1:
+#       ipv4_address: 10.6.0.10
+#   environment:
+#     CONSUL_LICENSE: ${CONSUL_LICENSE}
+#   command: "agent"
 
   consul-client-ap1-partition:
     image: consul-dev:latest
     container_name: consul-client-ap1-partition-1
     restart: always
     volumes:
-      - ./agent-configs/client-ap1.hcl:/consul/config/client-ap1.hcl
+      - ./configs/client-ap1.hcl:/consul/config/client-ap1.hcl
     networks:
       dc1:
-        ipv4_address: 10.5.0.11
-    environment:
-      CONSUL_LICENSE: ${CONSUL_LICENSE}
-    command: "agent"
-
-  apigw:
-    image: consul-dev:latest
-    container_name: consul-api-gw
-    volumes:
-      - ./agent-configs/apigw.hcl:/consul/config/apigw.hcl
-    networks:
-      dc1:
-        ipv4_address: 10.5.0.12
+        ipv4_address: 10.6.0.11
     environment:
       CONSUL_LICENSE: ${CONSUL_LICENSE}
     ports:
+      - "9500:8500"
+    command: "agent"
 
-    command: [
-      "consul",
-      "connect", "envoy",
-      "-gateway", "api",
-      "-register",
-      "-service", "api-gateway",
-      "-proxy-id", "api-gateway"
-    ]
+  apigw:
+    image: consul-envoy:local
+    container_name: consul-api-gw
+    volumes:
+      - ./configs/apigw.hcl:/config/apigw.hcl
+    networks:
+      dc1:
+        ipv4_address: 10.6.0.12
+    environment:
+      CONSUL_LICENSE: ${CONSUL_LICENSE}
+      CONSUL_HTTP_ADDR: 10.6.0.2:8500
+      CONSUL_GRPC_ADDR: 10.6.0.2:8502
+    ports:
+      - "9001:9001"
+      - "19000:19000"
+    command: "/bin/bash -c 'consul config write /config/apigw.hcl && consul connect envoy -gateway api -register -service api-gateway -proxy-id api-gateway'"
 
 
   service-bender-default:
@@ -70,53 +68,52 @@ services:
     command: "server -redirect-port -disabled -echo-server-default-params status=200"
     ports:
       - "8080:8080"
-      - "19002:19000"
+      - "19001:19000"
     networks:
-      -dc1:
-        ipv4_address: 10.5.0.100
+      dc1:
+        ipv4_address: 10.6.0.100
 
   service_bender_default_envoy:
-    image: jmaguire5588/consul-envoy:v1.15.2-ent_v1.25.1
+    image: consul-envoy:local
     container_name: service-bender-default-envoy
     restart: unless-stopped
     volumes:
-      - ./service-configs/bender.hcl:/consul/config/bender.hcl
+      - ./configs/bender.hcl:/consul/config/bender.hcl
     environment:
       CONSUL_LICENSE: ${CONSUL_LICENSE}
-      CONSUL_HTTP_ADDR: 10.5.0.2:8500
-      CONSUL_GRPC_ADDR: 10.5.0.2:8502
-    command: [
-      "consul",
-      "connect", "envoy",
-      "-sidecar-for", "service-bender", "-admin-bind=0.0.0.0:19000"
-    ]
+      CONSUL_HTTP_ADDR: 10.6.0.2:8500
+      CONSUL_GRPC_ADDR: 10.6.0.2:8502
+      SERVICE_CONFIG: /consul/config/bender.hcl
+    command: "consul connect envoy -sidecar-for bender -admin-bind=0.0.0.0:19000"
     network_mode: "service:service-bender-default"
 
-  service-zoidberg-ap1:
-    image: docker.mirror.hashicorp.services/fortio/fortio
-    container_name: "service-zoidberg"
-    command: "server -redirect-port -disabled -echo-server-default-params status=200"
-    ports:
-      - "19003:19000"
-    networks:
-      -dc1:
-        ipv4_address: 10.5.0.101
+      #  service-zoidberg-ap1:
+      #    image: docker.mirror.hashicorp.services/fortio/fortio
+      #    container_name: "service-zoidberg"
+      #    command: "server -redirect-port -disabled -echo-server-default-params status=200"
+      #    ports:
+      # - "8081:8080"
+      #- "19003:19000"
+      #    networks:
+      #dc1:
+      #  ipv4_address: 10.6.0.101
 
-  service-zoidberg-ap1-envoy:
-    image: jmaguire5588/consul-envoy:v1.15.2-ent_v1.25.1
-    container_name: service-zoidber-api1-envoy
-    restart: unless-stopped
-    volumes:
-      - ./service-configs/zoidberg.hcl:/consul/config/zoidberg.hcl
-    environment:
-      CONSUL_LICENSE: ${CONSUL_LICENSE}
-      CONSUL_HTTP_ADDR: 10.5.0.2:8500
-      CONSUL_GRPC_ADDR: 10.5.0.2:8502
-    command: [
-      "consul",
-      "connect", "envoy",
-      "-sidecar-for", "service-zoidberg",
-      "partition", "ap1",
-      "-admin-bind=0.0.0.0:19000"
-    ]
-    network_mode: "service:service-zoidberg-ap1"
+      #  service-zoidberg-ap1-envoy:
+      #    image: consul-envoy:local
+      #    container_name: service-zoidberg-api1-envoy
+      #    restart: unless-stopped
+      #    volumes:
+      #      - ./configs/zoidberg.hcl:/consul/config/zoidberg.hcl
+      #    environment:
+      #      CONSUL_LICENSE: ${CONSUL_LICENSE}
+      #      CONSUL_HTTP_ADDR: 10.6.0.11:8500
+      #      CONSUL_GRPC_ADDR: 10.6.0.11:8502
+      #    command: "consul connect envoy -sidecar-for service-zoidberg partition ap1 -admin-bind=0.0.0.0:19000"
+      #    network_mode: "service:service-zoidberg-ap1"
+
+networks:
+  dc1:
+    driver: bridge
+    ipam:
+     config:
+       - subnet: 10.6.0.0/16

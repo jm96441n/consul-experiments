@@ -6,12 +6,6 @@ parents = [
     name = "api-gateway"
     kind = "api-gateway"
   },
-  {
-    sectionName = "listener-one"
-    name = "api-gateway"
-    kind = "api-gateway"
-  }
-
 ]
 
 rules = [
