@@ -4,6 +4,7 @@ global:
   logLevel: debug
   enabled: false
   imageK8S: consul-k8s-control-plane-dev:blueberry
+  image: consul-dev:local
 
 connectInject:
   enabled: true

@@ -6,6 +6,7 @@ echo "cluster created"
 
 echo "loading consul-k8s image"
 kind load docker-image consul-k8s-control-plane-dev:blueberry -n conlab
+kind load docker-image consul-dev:local -n conlab
 echo "loaded consul-k8s image"
 
 echo "helm installing"
