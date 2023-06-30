@@ -17,6 +17,10 @@ sleep 5
 
 consul config write ./configs/proxy_defaults.hcl
 
+consul config write ./configs/jwt-provider.hcl
+
+consul config write ./configs/jwt-intention.hcl
+
 docker compose logs -f
 
 wait

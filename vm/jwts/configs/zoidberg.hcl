@@ -15,10 +15,12 @@ service {
                 interval ="10s"
             }
             proxy {
-                destination_service_name = "zoidberg"
-                destination_service_id = "zoidberg"
-                local_service_address = "10.6.0.200"
-                local_service_port = 8080
+                upstreams = [
+                    {
+                        destination_name = "bender"
+                        local_bind_port = 5000
+                    }
+                ]
             }
         }
     }
