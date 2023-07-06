@@ -1,0 +1,86 @@
+#!/bin/bash
+
+set -Eeuo pipefail
+
+cleanup() {
+    kind delete clusters -A
+    echo "shutting down"
+}
+
+trap "cleanup" ERR
+
+main() {
+    cluster_one_name="k1"
+    cluster_one_ctx="kind-k1"
+    cluster_one_helm_release="cluster-01"
+
+    cluster_two_name="k2"
+    cluster_two_ctx="kind-k2"
+    cluster_two_helm_release="cluster-02"
+
+    setup_cluster $cluster_one_name
+    setup_cluster $cluster_two_name
+
+    helm_install $cluster_one_ctx $cluster_one_helm_release
+    helm_install $cluster_two_ctx $cluster_two_helm_release
+
+    kubectl wait --namespace consul \
+        --context $cluster_one_ctx \
+        --for=condition=ready pod \
+        --selector=app=consul \
+        --timeout=90s
+
+    configure_proxy_defaults $cluster_one_ctx
+
+    kubectl wait --namespace consul \
+        --context $cluster_one_ctx \
+        --for=condition=ready pod \
+        --selector=app=consul \
+        --timeout=90s
+    configure_proxy_defaults $cluster_two_ctx
+
+    # setup peering
+    kubectl --context $cluster_one_ctx apply --filename acceptor.yaml
+    kubectl --context $cluster_one_ctx get secret peering-token --output yaml >peering-token.yaml
+
+    # apply peering token
+    kubectl --context $cluster_two_ctx apply --filename peering-token.yaml
+
+    # setup exported service in cluster 2
+    kubectl --context $cluster_two_ctx apply --filename backend.yaml
+    kubectl --context $cluster_two_ctx apply --filename exported-service.yaml
+    kubectl --context $cluster_two_ctx apply --filename intention.yaml
+
+    # setup frontend service in cluster 1
+    kubectl --context $cluster_one_ctx apply --filename frontend.yaml
+}
+
+setup_cluster() {
+    name="$1"
+    kind create cluster -n "$name"
+    setup_metallb
+}
+
+# setup metallb in cluster as documented https://kind.sigs.k8s.io/docs/user/loadbalancer/
+setup_metallb() {
+    kubectl apply -f https://raw.githubusercontent.com/metallb/metallb/v0.13.7/config/manifests/metallb-native.yaml
+    sleep 15
+    kubectl wait --namespace metallb-system \
+        --for=condition=ready pod \
+        --selector=app=metallb \
+        --timeout=90s
+    kubectl apply -f https://kind.sigs.k8s.io/examples/loadbalancer/metallb-config.yaml
+}
+
+helm_install() {
+    kube_context="$1"
+    name="$2"
+    helm install "$name" hashicorp/consul --create-namespace --namespace consul --version "1.0.1" --values values.yaml --set global.datacenter=dc1 --kube-context "$kube_context" --wait
+}
+
+configure_proxy_defaults() {
+    ctx="$1"
+    kubectl --context "$ctx" apply -f proxy-defaults.yaml
+}
+
+main
