@@ -39,12 +39,16 @@ main() {
         --timeout=90s
     configure_proxy_defaults $cluster_two_ctx
 
+    configure_mesh $cluster_one_ctx
+    configure_mesh $cluster_two_ctx
+
     # setup peering
     kubectl --context $cluster_one_ctx apply --filename acceptor.yaml
     kubectl --context $cluster_one_ctx get secret peering-token --output yaml >peering-token.yaml
 
     # apply peering token
     kubectl --context $cluster_two_ctx apply --filename peering-token.yaml
+    kubectl --context $cluster_two_ctx apply --filename dialer.yaml
 
     # setup exported service in cluster 2
     kubectl --context $cluster_two_ctx apply --filename backend.yaml
@@ -81,6 +85,11 @@ helm_install() {
 configure_proxy_defaults() {
     ctx="$1"
     kubectl --context "$ctx" apply -f proxy-defaults.yaml
+}
+
+configure_mesh() {
+    ctx="$1"
+    kubectl --context "$ctx" apply -f mesh.yaml
 }
 
 main
