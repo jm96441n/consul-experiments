@@ -11,52 +11,52 @@ trap "cleanup" ERR
 
 main() {
     cluster_one_name="k1"
-    cluster_one_ctx="kind-k1"
-    cluster_one_helm_release="cluster-01"
+    cluster_one_ctx="$CLUSTER1_CONTEXT"
+    cluster_one_helm_release="$HELM_RELEASE_NAME1"
 
     cluster_two_name="k2"
-    cluster_two_ctx="kind-k2"
-    cluster_two_helm_release="cluster-02"
+    cluster_two_ctx="$CLUSTER2_CONTEXT"
+    cluster_two_helm_release="$HELM_RELEASE_NAME2"
 
     setup_cluster $cluster_one_name
     setup_cluster $cluster_two_name
 
-    helm_install $cluster_one_ctx $cluster_one_helm_release
-    helm_install $cluster_two_ctx $cluster_two_helm_release
+    helm_install "$cluster_one_ctx" "$cluster_one_helm_release"
+    helm_install "$cluster_two_ctx" "$cluster_two_helm_release"
 
     kubectl wait --namespace consul \
-        --context $cluster_one_ctx \
+        --context "$cluster_one_ctx" \
         --for=condition=ready pod \
         --selector=app=consul \
         --timeout=90s
 
-    configure_proxy_defaults $cluster_one_ctx
+    configure_proxy_defaults "$cluster_one_ctx"
 
     kubectl wait --namespace consul \
-        --context $cluster_one_ctx \
+        --context "$cluster_one_ctx" \
         --for=condition=ready pod \
         --selector=app=consul \
         --timeout=90s
-    configure_proxy_defaults $cluster_two_ctx
+    configure_proxy_defaults "$cluster_two_ctx"
 
-    configure_mesh $cluster_one_ctx
-    configure_mesh $cluster_two_ctx
+    configure_mesh "$cluster_one_ctx"
+    configure_mesh "$cluster_two_ctx"
 
     # setup peering
-    kubectl --context $cluster_one_ctx apply --filename acceptor.yaml
-    kubectl --context $cluster_one_ctx get secret peering-token --output yaml >peering-token.yaml
+    kubectl --context "$cluster_one_ctx" apply --filename acceptor.yaml
+    kubectl --context "$cluster_one_ctx" get secret peering-token --output yaml >peering-token.yaml
 
     # apply peering token
-    kubectl --context $cluster_two_ctx apply --filename peering-token.yaml
-    kubectl --context $cluster_two_ctx apply --filename dialer.yaml
+    kubectl --context "$cluster_two_ctx" apply --filename peering-token.yaml
+    kubectl --context "$cluster_two_ctx" apply --filename dialer.yaml
 
     # setup exported service in cluster 2
-    kubectl --context $cluster_two_ctx apply --filename backend.yaml
-    kubectl --context $cluster_two_ctx apply --filename exported-service.yaml
-    kubectl --context $cluster_two_ctx apply --filename intention.yaml
+    kubectl --context "$cluster_two_ctx" apply --filename backend.yaml
+    kubectl --context "$cluster_two_ctx" apply --filename exported-service.yaml
+    kubectl --context "$cluster_two_ctx" apply --filename intention.yaml
 
     # setup frontend service in cluster 1
-    kubectl --context $cluster_one_ctx apply --filename frontend.yaml
+    kubectl --context "$cluster_one_ctx" apply --filename frontend.yaml
 }
 
 setup_cluster() {
