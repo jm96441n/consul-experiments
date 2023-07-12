@@ -8,7 +8,7 @@ spec:
     - echo.something
   # Defines the gateway listener.
   parentRefs:
-  - name: api-gateway
+  - name: gateway
   # Rules define behaviors for network traffic that goes through the route.
   rules:
   - matches:

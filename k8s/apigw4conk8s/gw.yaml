@@ -8,7 +8,7 @@ kind: GatewayClass
 metadata:
   name: gatewayclass
 spec:
-  controllerName: "hashicorp.com/consul-api-gateway-controller"
+  controllerName: "consul.hashicorp.com/gateway-controller"
   parametersRef:
     group: consul.hashicorp.com
     kind: GatewayClassConfig
@@ -24,3 +24,6 @@ spec:
   - protocol: HTTP
     port: 8443
     name: to-server
+    tls:
+      certificateRefs:
+        - name: cert-one
