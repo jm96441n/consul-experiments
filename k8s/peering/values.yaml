@@ -11,17 +11,9 @@ meshGateway:
   enabled: true
   replicas: 2
 
-connectInject:
-  enabled: true
-  default: true
-
 server:
   enabled: true
   replicas: 1
-
-client:
-  enabled: true
-  grpc: true
 
 ui:
   enabled: true
