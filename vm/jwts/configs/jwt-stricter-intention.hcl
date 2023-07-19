@@ -3,7 +3,7 @@ Name = "bender"
 
 Sources = [
     {
-        Name = "zoidberg"
+        Name = "*"
         Permissions = {
             Action = "allow"
             HTTP = {
@@ -16,7 +16,11 @@ Sources = [
                         VerifyClaims = [
                             {
                                 Path = ["role"]
-                                Value = "doctor"
+                                Value = "human"
+                            },
+                            {
+                                Path = ["role"]
+                                Value = "robot"
                             }
                         ]
                     }
@@ -24,14 +28,4 @@ Sources = [
             }
         }
     },
-    {
-        Name = "*"
-        Permissions = {
-            Action = "deny"
-
-            HTTP = {
-                PathPrefix = "/"
-            }
-        }
-    }
 ]

@@ -18,6 +18,7 @@ sleep 5
 consul config write ./configs/proxy_defaults.hcl
 
 consul config write ./configs/jwt-provider.hcl
+consul config write ./configs/jwt-provider-another.hcl
 
 #consul config write ./configs/jwt-intention.hcl
 consul config write ./configs/jwt-stricter-intention.hcl
