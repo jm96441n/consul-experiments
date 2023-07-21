@@ -1,6 +1,6 @@
 services:
   consul-server1:
-    image: consul-dev:latest
+    image: consul:local
     container_name: consul-server1
     restart: always
     volumes:
@@ -35,6 +35,7 @@ services:
     environment:
       CONSUL_LICENSE: ${CONSUL_LICENSE}
       CONSUL_HTTP_ADDR: 10.6.0.2:8500
+      CONSUL_HTTP_TOKEN: root
       CONSUL_GRPC_ADDR: 10.6.0.2:8502
       SERVICE_CONFIG: /consul/config/bender.hcl
     command: "consul connect envoy -sidecar-for bender -admin-bind=0.0.0.0:19000"
@@ -62,6 +63,7 @@ services:
     environment:
       CONSUL_LICENSE: ${CONSUL_LICENSE}
       CONSUL_HTTP_ADDR: 10.6.0.2:8500
+      CONSUL_HTTP_TOKEN: root
       CONSUL_GRPC_ADDR: 10.6.0.2:8502
       SERVICE_CONFIG: /consul/config/zoidberg.hcl
     command: "consul connect envoy -sidecar-for zoidberg -admin-bind=0.0.0.0:19000"
@@ -89,6 +91,7 @@ services:
     environment:
       CONSUL_LICENSE: ${CONSUL_LICENSE}
       CONSUL_HTTP_ADDR: 10.6.0.2:8500
+      CONSUL_HTTP_TOKEN: root
       CONSUL_GRPC_ADDR: 10.6.0.2:8502
       SERVICE_CONFIG: /consul/config/nibbler.hcl
     command: "consul connect envoy -sidecar-for nibbler -admin-bind=0.0.0.0:19000"

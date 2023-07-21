@@ -16,11 +16,7 @@ Sources = [
                         VerifyClaims = [
                             {
                                 Path = ["role"]
-                                Value = "human"
-                            },
-                            {
-                                Path = ["role"]
-                                Value = "robot"
+                                Value = "doctor"
                             }
                         ]
                     }

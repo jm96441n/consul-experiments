@@ -19,6 +19,17 @@ ports {
     grpc = 8502
 }
 
+acl = {
+    enabled = true
+    default_policy = "deny"
+    enable_token_persistence = true
+    tokens {
+        initial_management = "root"
+        agent = "root"
+        default = ""
+    }
+}
+
 bind_addr = "0.0.0.0"
 advertise_addr =" 10.6.0.2"
 
