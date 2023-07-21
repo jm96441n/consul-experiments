@@ -1,0 +1,27 @@
+#!/bin/bash
+
+set -e
+
+export CONSUL_K8S_CHARTS_LOCATION="$HOME/hashi/consul-k8s/charts/consul"
+
+if [ -z "$(kind get clusters | rg "gwtime")" ]; then
+    kind create cluster --config cluster.yaml
+fi
+docker tag consul-k8s-control-plane-dev:latest consul-k8s-control-plane-dev:local
+
+# The following line assumes that you have compiled the image locally using `make docker/dev` from the consul-k8s repo
+kind load docker-image consul-k8s-control-plane-dev:local -n gwtime
+kind load docker-image consul:local -n gwtime
+echo "helm installing"
+helm install consul "$CONSUL_K8S_CHARTS_LOCATION" -f ./consul/consul_values.yaml -n consul --create-namespace --wait
+echo "helm is done"
+kubectl wait --timeout=180s --for=condition=Available=True deployments/consul-consul-connect-injector -n consul
+kubectl apply -f ./consul/proxy-defaults.yaml
+kubectl apply -f services
+kubectl apply -f ./consul/gw.yaml
+while ! kubectl get deployments api-gateway; do sleep 1; done
+kubectl wait --timeout=180s --for=condition=Available=True deployments/api-gateway || true
+kubectl apply -f ./consul/jwt-provider.yaml
+kubectl apply -f ./consul/httproute.yaml
+kubectl apply -f ./consul/jwt-intention.yaml
+kubectl get svc -n consul

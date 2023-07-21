@@ -1,0 +1,15 @@
+apiVersion: consul.hashicorp.com/v1alpha1
+kind: ServiceIntentions
+metadata:
+  name: bender
+spec:
+  destination:
+    name: bender
+  jwt:
+    providers:
+      - name: local
+  sources:
+    - name: zoidberg
+      action: allow
+    - name: "*"
+      action: deny
