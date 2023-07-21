@@ -10,6 +10,12 @@ spec:
       - name: local
   sources:
     - name: zoidberg
-      action: allow
+      permissions:
+        - action: allow
+          http:
+            pathPrefix: "/"
     - name: "*"
-      action: deny
+      permissions:
+        - action: deny
+          http:
+            pathPrefix: "/"
