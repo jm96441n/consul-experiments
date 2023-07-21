@@ -22,6 +22,11 @@ consul config write -token="root" ./configs/jwt-provider-another.hcl
 
 #consul config write ./configs/jwt-intention.hcl
 consul config write -token="root" ./configs/jwt-stricter-intention.hcl
+consul config write -token="root" ./configs/bender-gw-intention.hcl
+consul config write -token="root" ./configs/zoidberg-gw-intention.hcl
+consul config write -token="root" ./configs/nibbler-gw-intention.hcl
+
+consul config write -token="root" ./configs/http-route.hcl
 
 docker compose logs -f
 

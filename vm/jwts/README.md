@@ -5,6 +5,7 @@
 * 1 consul server
 * 3 services (bender, zoidberg, and nibbler) ([http-echo](https://hub.docker.com/r/hashicorp/http-echo/))
 * 1 sidecar per service
+* 1 APIGateway
 
 Tasks can be run either using make or [xc](https://github.com/joerdav/xc)
 
