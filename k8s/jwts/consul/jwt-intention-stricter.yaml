@@ -1,0 +1,25 @@
+apiVersion: consul.hashicorp.com/v1alpha1
+kind: ServiceIntentions
+metadata:
+  name: bender
+spec:
+  destination:
+    name: bender
+  jwt:
+    providers:
+      - name: local
+        verifyClaims:
+        - path:
+          - role
+          value: doctor
+  sources:
+    - name: zoidberg
+      permissions:
+        - action: allow
+          http:
+            pathPrefix: "/"
+    - name: "*"
+      permissions:
+        - action: deny
+          http:
+            pathPrefix: "/"

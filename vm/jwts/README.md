@@ -16,7 +16,7 @@ Run the `start.sh` file (ctrl-c in this window with the logs will trigger a shut
 ```sh
 ./start.sh
 ```
-This starts the `docker-compose` setup which runs consul and the two services. It then configures a jwt provider based
+This starts the `docker-compose` setup which runs consul and the three services. It then configures a jwt provider based
 on the tokens in the [token section](#Tokens) below, and a service
 intention to only allow requests from zoidberg to bender if a valid JWT is present.
 
