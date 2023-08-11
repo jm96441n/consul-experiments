@@ -18,6 +18,17 @@ rules = [
             }
         }
     ]
+    filters = [
+        {
+            JWT = {
+                Providers = [
+                    {
+                        Name="okta"
+                    }
+                ]
+            }
+        }
+    ]
     services = [
       {
         name = "bender"

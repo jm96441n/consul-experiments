@@ -20,6 +20,13 @@ This starts the `docker-compose` setup which runs consul and the three services.
 on the tokens in the [token section](#Tokens) below, and a service
 intention to only allow requests from zoidberg to bender if a valid JWT is present.
 
+### convoy-build
+installs the `convoy-build` command
+```
+go install github.com/jm96441n/convoy-build
+```
+This rebuilds the convoy image, which includes local consul and envoy into it
+
 ### exec-zoidberg
 Execs you into the zoidberg container and drops you into a shell
 ```

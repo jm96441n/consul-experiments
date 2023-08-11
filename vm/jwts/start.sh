@@ -9,6 +9,8 @@ cleanup() {
 
 trap 'trap " " SIGTERM; cleanup' SIGINT SIGTERM
 
+go install github.com/jm96441n/convoy-build
+
 echo "Starting services"
 
 docker compose up -d

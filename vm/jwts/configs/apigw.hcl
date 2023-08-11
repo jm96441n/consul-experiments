@@ -5,5 +5,20 @@ Listeners = [
     name = "listener-one"
     port     = 9001
     protocol = "http"
+    override = {
+        JWT = {
+            Providers = [
+                {
+                    Name="okta"
+                    VerifyClaims = [
+                        {
+                            Path = ["role"]
+                            Value = "doctor"
+                        }
+                    ]
+                }
+            ]
+        }
+    }
   }
 ]

@@ -1,6 +1,6 @@
 services:
   consul-server1:
-    image: consul:local
+    image: hashicorp/consul-enterprise:local
     container_name: consul-server1
     restart: always
     volumes:
