@@ -9,13 +9,7 @@ Listeners = [
         JWT = {
             Providers = [
                 {
-                    Name="okta"
-                    VerifyClaims = [
-                        {
-                            Path = ["role"]
-                            Value = "doctor"
-                        }
-                    ]
+                    Name="local"
                 }
             ]
         }

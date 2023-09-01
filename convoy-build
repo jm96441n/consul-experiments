@@ -1,11 +1,16 @@
 #! /usr/bin/bash
 
+DOCKERFILE="./Dockerfile"
+if [ -n "$1" ]; then
+    DOCKERFILE="$1"
+fi
+
 cp ~/go/bin/consul ./consul
 cp /usr/local/bin/envoy ./envoy
 
 DOCKERTAG="consul-envoy:local"
 
-docker build -t "$DOCKERTAG" .
+docker build -t "$DOCKERTAG" -f "$DOCKERFILE" .
 
 rm consul
 rm envoy

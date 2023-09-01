@@ -13,6 +13,14 @@ service {
                 tcp = "10.6.0.200:20000"
                 interval ="10s"
             }
+            proxy = {
+                upstreams = [
+                    {
+                        destination_name = "bender"
+                        local_bind_port = 5000
+                    }
+                ]
+            }
         }
     }
 }

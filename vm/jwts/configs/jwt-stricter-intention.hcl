@@ -1,13 +1,20 @@
 Kind = "service-intentions"
 Name = "bender"
 
+            JWT = {
+                Providers = [
+                    {
+                        Name = "local"
+                    }
+                ]
+            }
 Sources = [
     {
         Name = "*"
         Permissions = {
             Action = "allow"
             HTTP = {
-                PathPrefix = "/"
+                PathPrefix = "/bender"
             }
             JWT = {
                 Providers = [

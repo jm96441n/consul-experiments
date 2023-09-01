@@ -3,18 +3,11 @@ Name = "bender"
 
 Sources = [
     {
-        Name = "zoidberg"
+        Name = "api-gateway-route"
         Permissions = {
             Action = "allow"
             HTTP = {
                 PathPrefix = "/"
-            }
-            JWT = {
-                Providers = [
-                    {
-                        Name = "local"
-                    }
-                ]
             }
         }
     },

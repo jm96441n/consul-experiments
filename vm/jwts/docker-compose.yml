@@ -113,7 +113,7 @@ services:
       CONSUL_HTTP_TOKEN: "root"
       CONSUL_HTTP_ADDR: 10.6.0.2:8500
       CONSUL_GRPC_ADDR: 10.6.0.2:8502
-    command: "/bin/bash -c 'consul config write /config/apigw.hcl && consul connect envoy -gateway api -register -service api-gateway -proxy-id api-gateway -admin-bind=0.0.0.0:19000'"
+    command: "/bin/bash -c 'consul config write /config/apigw.hcl && consul connect envoy -gateway api -register -service api-gateway -proxy-id api-gateway -admin-bind=0.0.0.0:19000'" # -- -l trace' "
 
 networks:
   dc1:

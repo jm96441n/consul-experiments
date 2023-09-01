@@ -18,21 +18,44 @@ rules = [
             }
         }
     ]
-    filters = [
-        {
-            JWT = {
-                Providers = [
-                    {
-                        Name="okta"
-                    }
-                ]
-            }
+    filters = {
+        JWT = {
+            Providers = [
+                {
+                    Name="local"
+                    VerifyClaims = [
+                        {
+                            Path = ["role"]
+                            Value = "doctor"
+                        }
+                    ]
+                }
+            ]
         }
-    ]
+    }
     services = [
       {
         name = "bender"
-      }
+      },
+      {
+        name = "nibbler"
+
+    filters = {
+        JWT = {
+            Providers = [
+                {
+                    Name="local"
+                    VerifyClaims = [
+                        {
+                            Path = ["role"]
+                            Value = "pet"
+                        }
+                    ]
+                }
+            ]
+        }
+    }
+    },
     ]
   },
   {
@@ -50,19 +73,6 @@ rules = [
       }
     ]
   },
-  {
-    matches = [
-        {
-            path = {
-                match = "prefix"
-                value = "/nibbler"
-            }
-        }
-    ]
-    services = [
-      {
-        name = "nibbler"
-      }
-    ]
-  }
 ]
+
+# DONT FORGET TO EXPORT VARS!!
