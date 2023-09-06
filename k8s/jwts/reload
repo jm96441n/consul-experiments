@@ -5,10 +5,12 @@ set -e
 export CONSUL_K8S_CHARTS_LOCATION="$HOME/hashi/consul-k8s/charts/consul"
 
 # remove everything but keep cluster in tact
-kubectl delete -f ./consul/gw.yaml
-kubectl delete -f ./consul/httproute.yaml
-kubectl delete -f ./services
-kubectl delete -f ./consul/service-defaults.yaml
+kubectl delete -f ./consul/gw.yaml || true
+kubectl delete -f ./consul/httproute.yaml || true
+kubectl delete -f ./services || true
+kubectl delete -f ./consul/proxy-defaults.yaml || true
+kubectl delete -f ./consul/gatewapolicy.yaml || true
+kubectl delete -f ./consul/bad_policy.yaml || true
 helm uninstall consul -n consul
 
 # tag new version

@@ -20,7 +20,7 @@ This starts the `kind` setup which runs kind, consul, and the three services. It
 on the tokens in the [token section](#Tokens) below, and a service
 intention to only allow requests from zoidberg to bender if a valid JWT is present.
 
-
+### reload
 Run the `reload` file
 ```sh
 ./reload

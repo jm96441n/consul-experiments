@@ -1,0 +1,19 @@
+apiVersion: consul.hashicorp.com/v1alpha1
+# HTTPRoute routes HTTP requests to backend services.
+kind: GatewayPolicy
+metadata:
+  name: gw-policy-2
+spec:
+  targetRef:
+    name: api-gateway
+    sectionName: listener-one
+    group: gateway.networking.k8s.io/v1beta1
+    kind: Gateway
+  override:
+    jwt:
+      providers:
+      - name: "local"
+  default:
+    jwt:
+      providers:
+      - name: "local"

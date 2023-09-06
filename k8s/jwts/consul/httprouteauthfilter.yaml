@@ -1,0 +1,9 @@
+apiVersion: consul.hashicorp.com/v1alpha1
+# HTTPRoute routes HTTP requests to backend services.
+kind: HTTPRouteAuthFilter
+metadata:
+  name: http-route
+spec:
+  jwt:
+    providers:
+    - name: "local"

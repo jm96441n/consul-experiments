@@ -2,6 +2,10 @@
 global:
   imageK8S: "consul-k8s-control-plane-dev:local"
   image: "consul:local"
+  enableConsulNamespaces: true
+  enterpriseLicense:
+    secretName: "license"
+    secretKey: "key"
   tls:
     enabled: true
     enableAutoEncrypt: true
