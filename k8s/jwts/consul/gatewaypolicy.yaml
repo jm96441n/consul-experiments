@@ -12,8 +12,4 @@ spec:
   override:
     jwt:
       providers:
-      - name: "okta"
-  default:
-    jwt:
-      providers:
       - name: "local"

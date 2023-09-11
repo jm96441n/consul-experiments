@@ -2,6 +2,7 @@
 global:
   imageK8S: "consul-k8s-control-plane-dev:local"
   image: "consul:local"
+  logLevel: debug
   enableConsulNamespaces: true
   enterpriseLicense:
     secretName: "license"
