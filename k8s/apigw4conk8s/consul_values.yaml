@@ -22,3 +22,6 @@ connectInject:
   transparentProxy:
     defaultEnabled: true
     defaultOverwriteProbes: true
+  apiGateway:            # Api Gateway params are defined here now.
+    managedGatewayClass:
+      serviceType: LoadBalancer
