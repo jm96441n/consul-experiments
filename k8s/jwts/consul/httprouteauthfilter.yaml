@@ -1,7 +1,14 @@
 apiVersion: consul.hashicorp.com/v1alpha1
 # HTTPRoute routes HTTP requests to backend services.
-kind: RouteRetryFilter
+kind: RouteAuthFilter
 metadata:
-  name: retry-filter
+  name: auth-filter
 spec:
-  numRetries: 5
+  jwt:
+    providers:
+    - name: "local"
+      verifyClaims:
+      - path:
+          - role
+            perm
+        value: admin

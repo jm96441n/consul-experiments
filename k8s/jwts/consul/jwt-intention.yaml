@@ -7,7 +7,7 @@ spec:
     name: bender
   jwt:
     providers:
-      - name: local
+      - name: okta
   sources:
     - name: zoidberg
       permissions:
