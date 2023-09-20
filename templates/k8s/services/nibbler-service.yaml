@@ -1,0 +1,74 @@
+---
+apiVersion: consul.hashicorp.com/v1alpha1
+kind: ServiceDefaults
+metadata:
+  name: nibbler
+  namespace: default
+spec:
+  protocol: http
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: nibbler
+  name: nibbler
+  namespace: default
+spec:
+  ports:
+  - port: 8082
+    name: high
+    protocol: TCP
+    targetPort: 8082
+  selector:
+    app: nibbler
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: nibbler
+  namespace: default
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: nibbler
+  name: nibbler
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nibbler
+  template:
+    metadata:
+      labels:
+        app: nibbler
+      annotations:
+        'consul.hashicorp.com/connect-inject': 'true'
+    spec:
+      serviceAccountName: nibbler
+      containers:
+      - image: hashicorp/http-echo:alpine
+        args: ["-listen=:8082", "-text='I can do more than talk, I can pontificate!'"]
+        name: nibbler
+        env:
+        - name: SERVICE_NAME
+          value: nibbler
+        - name: POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        - name: CONSUL_HTTP_TOKEN
+          value: root
+        - name: SIMPLE_TOKEN
+          value: "eyJ0eXAiOiJKV1QiLCJhbGciOiJQUzI1NiIsImtpZCI6IkMtRTFuQ2p3Z0JDLVB1R00yTzQ2N0ZSRGhLeDhBa1ZjdElTQWJvM3JpZXcifQ.eyJpc3MiOiJsb2NhbCJ9.GV0lwSP6DWvVaOS1FgMxXRLeS4EvZngBHxUppqSUlVB-j4E08zMctfNO3h4i3c2OCLif1iEMks66BeXzZbuApeaKPZpqIuV8WNwsCJe5ehPPaxfMJ9KviGoFrJnJ_Y7g-Ov7kByoeeOSwdhYJ7kggpUoH0WGnFnWiOKniG-f9iyu-Bzi8Fn_Arvr-SaX4pDngsCAjC5qKb1CbWm-KV_gyUSls3wAsrV_8L4CmUqHw-Pu3DRyxO_GHfERHf0dJeLlxfGOLSQeunCWck1ETLlHk31fUjSE9zsmv2z_OaLFf86Rei4_IzX9mC__amGFS3voCKrdqueqZHdEnGGmjqLWCw"
+        - name: PET_TOKEN
+          value: "eyJ0eXAiOiJKV1QiLCJhbGciOiJQUzI1NiIsImtpZCI6IkMtRTFuQ2p3Z0JDLVB1R00yTzQ2N0ZSRGhLeDhBa1ZjdElTQWJvM3JpZXcifQ.eyJpc3MiOiJsb2NhbCIsInJvbGUiOiJwZXQifQ.l94rJayGGTMB426HwEw5ipSjaIHjm-UWDHiBAlB_Slmi814AxAfl_0AdRwSz67UDnkoygKbvPpR5xUB03JCXNshLZuKLegWsBeQg_OJYvZGmFagl5NglBFvH7Jbta4e1eQoAxZI6Xyy1jHbu7jFBjQPVnK8EaRvWoW8Pe8a8rp_5xhub0pomhvRF6Pm5kAS4cMnxvqpVc5Oo5nO7ws_SmoNnbt2Ok14k23Zx5E2EWmGStOfbgFsdbhVbepB2DMzqv1j8jvBbwa_OxCwc_7pEOthOOxRV6L3ZjgbRSB4GumlXAOCBYXD1cRLgrMSrWB1GkefAKu8PV0Ho1px6sI9Evg"
+        ports:
+        - containerPort: 8082

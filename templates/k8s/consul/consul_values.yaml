@@ -1,0 +1,35 @@
+# Contains values that affect multiple components of the chart.
+global:
+  imageK8S: "consul-k8s-control-plane-dev:local"
+  image: "consul:local"
+  logLevel: debug
+  enableConsulNamespaces: true
+  enterpriseLicense:
+    secretName: "license"
+    secretKey: "key"
+  tls:
+    enabled: true
+    enableAutoEncrypt: true
+    verify: true
+  acls:
+    manageSystemACLs: false
+server:
+  enabled: true
+  # The number of server agents to run. This determines the fault tolerance of the cluster.
+  replicas: 1
+# Contains values that configure the Consul UI.
+ui:
+  enabled: true
+  service:
+    enabled: true
+    type: NodePort
+    port:
+      http: 80
+    nodePort:
+      http: 30000
+# Configures and installs the automatic Consul Connect sidecar injector.
+connectInject:
+  enabled: true
+  transparentProxy:
+    defaultEnabled: true
+    defaultOverwriteProbes: true
