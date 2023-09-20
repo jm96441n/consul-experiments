@@ -1,0 +1,30 @@
+#! /bin/bash
+
+usage ()
+{
+   echo "Usage:"
+   echo "-d sets the deploy target, should either 'vm' or 'k8s'"
+   echo "-n sets the name of the directory, should reference the feature being shown in the example"
+   exit
+}
+
+name=""
+deployTarget="k8s"
+while getopts d:n: flag
+do
+    case "${flag}" in
+        d) deployTarget="${OPTARG}";;
+        n) name="${OPTARG}";;
+        ?) usage;;
+    esac
+done
+
+
+if [ -z "$name" ]; then 
+    echo "name must be provided"
+    exit 1
+fi;
+
+mkdir "./${deployTarget}/${name}"
+
+cp -r ./templates/"${deployTarget}"/* "./${deployTarget}/${name}/"
