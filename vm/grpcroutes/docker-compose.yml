@@ -1,0 +1,89 @@
+services:
+  consul-server1:
+    image: consul-dev:latest
+    container_name: consul-server1
+    restart: always
+    volumes:
+      - ./configs/server.hcl:/consul/config/server.hcl
+    networks:
+      dc1:
+        ipv4_address: 10.7.0.2
+    ports:
+      - 8500:8500
+      - 8600:8600
+    environment:
+      CONSUL_LICENSE: ${CONSUL_LICENSE}
+    command: "agent -bootstrap"
+    privileged: true
+
+  apigw:
+    image: consul-envoy:local
+    container_name: apigw
+    volumes:
+      - ./configs/apigw.hcl:/config/apigw.hcl
+    networks:
+      dc1:
+        ipv4_address: 10.7.0.12
+    ports:
+      - 9001:9001
+      - 19003:19000
+    environment:
+      CONSUL_LICENSE: ${CONSUL_LICENSE}
+      CONSUL_HTTP_ADDR: 10.7.0.2:8500
+      CONSUL_GRPC_ADDR: 10.7.0.2:8502
+    command: "/bin/bash -c 'consul config write /config/apigw.hcl && consul connect envoy -gateway api -register -service api-gateway -proxy-id api-gateway -admin-bind=0.0.0.0:19000'"
+
+  service-bender-default:
+    image: bender:local
+    container_name: "service-bender-default"
+    ports:
+      - "50051:50051"
+      - "19000:19000"
+    networks:
+      dc1:
+        ipv4_address: 10.7.0.100
+
+  service-bender-default-envoy:
+    image: consul-envoy:local
+    container_name: service-bender-default-envoy
+    volumes:
+      - ./configs/bender.hcl:/consul/config/bender.hcl
+    environment:
+      CONSUL_LICENSE: ${CONSUL_LICENSE}
+      CONSUL_HTTP_ADDR: 10.7.0.2:8500
+      CONSUL_GRPC_ADDR: 10.7.0.2:8502
+      SERVICE_CONFIG: /consul/config/bender.hcl
+    command: "consul connect envoy -sidecar-for bender -admin-bind=0.0.0.0:19000"
+    network_mode: "service:service-bender-default"
+
+  # service-zoidberg-default:
+    # image: hashicorp/http-echo:alpine
+    # container_name: "service-zoidberg-default"
+    # command: "-listen=:8080 -text='hello world'"
+    # ports:
+      # - "8080:8080"
+      # - "19001:19000"
+    # networks:
+      # dc1:
+        # ipv4_address: 10.7.0.200
+
+  # service-zoidberg-default-envoy:
+    # image: consul-envoy:local
+    # container_name: service-zoidberg-default-envoy
+    # volumes:
+      # - ./configs/zoidberg.hcl:/consul/config/zoidberg.hcl
+    # environment:
+      # CONSUL_LICENSE: ${CONSUL_LICENSE}
+      # CONSUL_HTTP_ADDR: 10.7.0.2:8500
+      # CONSUL_GRPC_ADDR: 10.7.0.2:8502
+      # SERVICE_CONFIG: /consul/config/zoidberg.hcl
+    # command: "consul connect envoy -sidecar-for zoidberg -admin-bind=0.0.0.0:19000"
+    # network_mode: "service:service-zoidberg-default"
+
+
+networks:
+  dc1:
+    driver: bridge
+    ipam:
+     config:
+       - subnet: 10.7.0.0/16

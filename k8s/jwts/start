@@ -26,5 +26,6 @@ kubectl wait --timeout=180s --for=condition=Available=True deployments/api-gatew
 kubectl apply -f ./consul/jwt-provider.yaml
 kubectl apply -f ./consul/httproute.yaml
 #kubectl apply -f ./consul/jwt-intention.yaml
-kubectl apply -f ./consul/jwt-intention-stricter.yaml
+#kubectl apply -f ./consul/jwt-intention-stricter.yaml
+kubectl apply -f ./consul/httprouteauthfilter.yaml
 kubectl get svc -n consul

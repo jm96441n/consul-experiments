@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+option go_package = "github.com/jm96441n/bender/proto";
+
+package bender;
+
+service Bender {
+    rpc Speak(QuoteRequest) returns (QuoteResponse) {}
+}
+
+message QuoteRequest {
+}
+
+message QuoteResponse {
+    string message = 1;
+}

@@ -10,9 +10,24 @@ parents = [
 
 rules = [
   {
-    filters {
-        URLRewrite {
-            path = "/fortio"
+    filters = {
+        JWT = {
+            Providers = [
+                {
+                    Name = "okta",
+                    VerifyClaims = {
+                        Path = ["aud"],
+                        Value = "api.apps.organization.com",
+                    }
+                },
+                {
+                    Name = "okta",
+                    VerifyClaims = {
+                        Path = ["perms", "role"],
+                        Value = "admin",
+                    }
+                }
+            ]
         }
     }
 
@@ -20,14 +35,6 @@ rules = [
       {
         name = "bender"
       }
-    ]
-    matches = [
-        {
-            path {
-                value = "/default"
-                match = "prefix"
-            }
-        }
     ]
   }
 ]

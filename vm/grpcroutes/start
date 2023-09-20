@@ -1,0 +1,26 @@
+#! /bin/bash
+
+set -e
+
+cleanup() {
+    echo "shutting down"
+    docker compose down
+}
+
+trap 'trap " " SIGTERM; cleanup' SIGINT SIGTERM
+
+echo "Starting services"
+
+docker compose up -d
+
+sleep 5
+
+consul config write ./configs/proxy_defaults_bender.hcl
+#consul config write ./configs/proxy_defaults_zoidberg.hcl
+
+#consul config write ./configs/grpc-route.hcl
+#consul config write ./configs/http-route.hcl
+
+docker compose logs -f
+
+wait

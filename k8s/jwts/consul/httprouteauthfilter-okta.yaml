@@ -1,0 +1,14 @@
+apiVersion: consul.hashicorp.com/v1alpha1
+# HTTPRoute routes HTTP requests to backend services.
+kind: RouteAuthFilter
+metadata:
+  name: auth-filter-okta
+spec:
+  jwt:
+    providers:
+    - name: "okta"
+      verifyClaims:
+      - path:
+          - role
+            perm
+        value: admin

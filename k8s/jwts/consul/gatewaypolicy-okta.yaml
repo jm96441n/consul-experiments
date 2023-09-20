@@ -2,7 +2,7 @@ apiVersion: consul.hashicorp.com/v1alpha1
 # HTTPRoute routes HTTP requests to backend services.
 kind: GatewayPolicy
 metadata:
-  name: gw-policy
+  name: gw-policy-2
 spec:
   targetRef:
     name: api-gateway

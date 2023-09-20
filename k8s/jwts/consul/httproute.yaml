@@ -6,19 +6,19 @@ metadata:
 spec:
   # Defines the gateway listener.
   parentRefs:
-  - name: gateway
+  - name: api-gateway
   # Rules define behaviors for network traffic that goes through the route.
   rules:
   - matches:
     - path:
         type: PathPrefix
         value: /bender
-    # filters:
-    #- type: ExtensionRef
-        # extensionRef:
-        #   group: consul.hashicorp.com
-        #   kind: RouteRetryFilter
-        #   name: retry-filter
+    filters:
+    - type: ExtensionRef
+      extensionRef:
+        group: consul.hashicorp.com
+        kind: RouteAuthFilter
+        name: auth-filter
     # Defines the backend service.
     backendRefs:
     - kind: Service

@@ -5,6 +5,14 @@ set -e
 if [ -z "$(kind get clusters | rg "gwtime")" ]; then
     kind create cluster --config cluster.yaml
 fi
+
+#kubectl apply -f https://raw.githubusercontent.com/metallb/metallb/v0.13.7/config/manifests/metallb-native.yaml
+#sleep 15
+#kubectl wait --namespace metallb-system \
+#    --for=condition=ready pod \
+#    --selector=app=metallb \
+#    --timeout=90s
+#kubectl apply -f https://kind.sigs.k8s.io/examples/loadbalancer/metallb-config.yaml
 docker tag consul-k8s-control-plane-dev:latest consul-k8s-control-plane-dev:blueberry
 
 # The following line assumes that you have compiled the image locally using `make docker/dev` from the consul-k8s repo

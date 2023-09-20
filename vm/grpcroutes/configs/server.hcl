@@ -19,8 +19,7 @@ ports {
     grpc = 8502
 }
 
-
 bind_addr = "0.0.0.0"
-advertise_addr =" 10.6.0.2"
+advertise_addr =" 10.7.0.2"
 
 auto_reload_config = true
