@@ -15,7 +15,7 @@ kubectl create secret generic license -n consul --from-literal license="$CONSUL_
 kind load docker-image consul-k8s-control-plane-dev:local -n basic
 kind load docker-image consul:local -n basic
 echo "helm installing"
-helm upgrade --install consul -f ./values.yaml --namespace consul --create-namespace --wait
+helm upgrade --install consul hashicorp/consul --version="1.3.0" --namespace consul --values ./values.yaml --wait
 echo "helm is done"
 kubectl wait --timeout=180s --for=condition=Available=True deployments/consul-connect-injector -n consul
 kubectl apply -f ./resources
