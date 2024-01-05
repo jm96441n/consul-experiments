@@ -1,0 +1,20 @@
+# Contains values that affect multiple components of the chart.
+global:
+  logLevel: debug
+  name: consul
+  datacenter: dc1
+  image: hashicorp/consul-enterprise:1.17-ent
+  imageK8S: consul-k8s-control-plane-dev:local
+  enableConsulNamespaces: true
+  enterpriseLicense:
+    secretName: license
+    secretKey: license
+
+server:
+  enabled: true
+  replicas: 1
+
+connectInject:
+  enabled: true
+  consulNamespaces:
+    mirroringK8S: true

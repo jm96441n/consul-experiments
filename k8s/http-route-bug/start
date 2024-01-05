@@ -1,0 +1,22 @@
+#!/bin/bash
+
+set -e
+
+if [ -z "$(kind get clusters | rg "basic")" ]; then
+	kind create cluster --config cluster.yaml
+fi
+
+docker tag consul-k8s-control-plane-dev:latest consul-k8s-control-plane-dev:local
+
+kubectl create namespace consul
+kubectl create namespace app
+kubectl create secret generic license -n consul --from-literal license="$CONSUL_LICENSE"
+# The following line assumes that you have compiled the image locally using `make docker/dev` from the consul-k8s repo
+kind load docker-image consul-k8s-control-plane-dev:local -n basic
+kind load docker-image consul:local -n basic
+echo "helm installing"
+helm upgrade --install consul -f ./values.yaml --namespace consul --create-namespace --wait
+echo "helm is done"
+kubectl wait --timeout=180s --for=condition=Available=True deployments/consul-connect-injector -n consul
+kubectl apply -f ./resources
+kubectl port-forward service/consul-server --namespace consul 8500:8500 &
