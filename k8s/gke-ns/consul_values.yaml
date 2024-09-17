@@ -1,0 +1,14 @@
+global:
+  name: "consul"
+  logLevel: "debug"
+  datacenter: dc1
+  image: hashicorp/consul-enterprise:1.19.2-ent
+  imageK8S: "hashicorp/consul-k8s-control-plane:1.5.3"
+  enterpriseLicense:
+    secretName: "license"
+    secretKey: "key"
+  enableConsulNamespaces: true
+server:
+  replicas: 1
+connectInject:
+  default: true

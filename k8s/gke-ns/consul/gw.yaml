@@ -1,0 +1,10 @@
+apiVersion: gateway.networking.k8s.io/v1beta1
+kind: Gateway
+metadata:
+  name: api-gateway
+spec:
+  gatewayClassName: consul
+  listeners:
+    - protocol: HTTP
+      port: 30002
+      name: listener-one
