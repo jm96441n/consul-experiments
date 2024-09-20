@@ -1,20 +1,3 @@
----
-apiVersion: consul.hashicorp.com/v1alpha1
-kind: JWTProvider
-metadata:
-  name: api-jwt-provider
-  namespace: default
-spec:
-  issuer: "https://sts.windows.net/0d04add0-5901-493c-b30c-4a8dd3dcc837/"
-  jsonWebKeySet:
-    remote:
-      uri: "https://login.microsoftonline.com/0d04add0-5901-493c-b30c-4a8dd3dcc837/discovery/v2.0/keys"
-      jwksCluster:
-        discoveryType: STRICT_DNS
-      # cacheDuration: 5m
-  forwarding:
-    headerName: user-token
----
 apiVersion: consul.hashicorp.com/v1alpha1
 kind: JWTProvider
 metadata:
